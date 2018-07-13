@@ -1,0 +1,139 @@
+
+eos wallet passwd: PW5KfVQTPyMJ7h2D3wtFBrPrW7gUF48vZ7tGD3NV4RE2eeegHCwb5
+miwoo wallet passwd: PW5KTNsyjpny9i7W17RsXJDuKetm5ERWK6csZjCZ66NNKWEv5p4nF
+pangxl wallet passwd: PW5JMjYS77tKtaonwwyPSXemS9LkHAfdjscUiJfjMyh5FNXmjoakU
+
+
+节点1的key
+5KKJZzK3fqoHbFFevRrzX7r1Gb8DtvnC82BAZEhrS7aqRtxpkth
+EOS6FwkA7gn9a46LbmJWuRCXdZYW9jznckVKXcZTHYbcFBAB9VcNC
+
+节点2的key
+Private key: 5KMScMjrJhH8vMn47nuBdNx9fBCmPvM6ZXAwKE7ktV14BhLcg32
+Public key: EOS5mTSfnAcfxJ6xUVZvyfaqY2cDL87RLcFpUsWRJ85iePz21dU1e
+
+用户1的key
+private key: 5J6YHicUZZiEViWe3MCQD2vdCC99WW8VHhCQST5NaHScYQibwLy
+public_key: EOS8kLLKdikhpY99EWSj8L8HHLSyE8xiRQW9mZAXxcf5thYK2LCzM
+
+用户2的key
+Private key: 5Jp45FkidCYQYG24n1capNNi2MxK74dgWrbZqTARy2ZuFSfTYmn
+Public key: EOS6Ds2dqrfcEELSzMnytNWCaRC6VwQfistJ77j1vuzaQoyw3wga5
+
+第一次启动
+./nodeos -e -p eosio --plugin eosio::chain_api_plugin --plugin eosio::history_api_plugin
+
+修改 /home/fengwork/.local/share/eosio/nodeos/config/config.ini
+block-log-dir = blocks
+enable-stale-production = true
+#required-participation = true
+shared-file-dir = blockchain
+shared-file-size = 8192
+readonly = 0
+send-whole-blocks = true
+http-server-address = 127.0.0.1:8888
+p2p-listen-endpoint = 0.0.0.0:9876
+p2p-server-address = localhost:9876
+allowed-connection = any
+
+required-participation = 33
+private-key = ["EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV","5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"]
+producer-name = eosio
+plugin = eosio::producer_plugin
+plugin = eosio::chain_api_plugin
+plugin = eosio::history_plugin
+plugin = eosio::history_api_plugin
+plugin = eosio::wallet_plugin
+plugin = eosio::wallet_api_plugin
+plugin = eosio::net_plugin
+plugin = eosio::net_api_plugin
+plugin = eosio::chain_plugin
+wallet-dir = "."
+
+再次运行: ./nodes   如果异常退出， database dirty, 运行 ./nodes --delete-all-blocks
+
+
+创建自定义名称的钱包（./cleos wallet create -n xxx
+给钱包上锁（./cleos wallet lock -n xxx）
+解锁钱包（./cleos wallet unlock -n xxx --password pasxxxxxxxxxxxxxxxxxxx）
+查看钱包中的keys（./cleos wallet keys）
+./cleos wallet list
+创建密钥（./cleos create key）
+向wallet导入key（./cleos wallet import private-key）
+创建账户（./cleos create account ${authorizing_account} ${new_account} ${owner_key} ${active_key} ）
+4、查看账户信息（./cleos get account -j ${accountName}）
+5、根据公钥获得账户列表（./cleos get accounts ${public-key}）
+
+在搞链之前：
+systemAccounts = [
+    'eosio.bpay',
+    'eosio.msig',
+    'eosio.names',
+    'eosio.ram',
+    'eosio.ramfee',
+    'eosio.saving',
+    'eosio.stake',
+    'eosio.token',
+    'eosio.upay',
+]
+这些用户一定要有
+cleos create account eosio eosio.bpay EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.msig EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.names EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.ram EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.ramfee EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.saving EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.stake EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.token EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.upay EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+
+cleos set contract eosio.token ./eosio.token -p eosio.token
+cleos set contract eosio ./eosio.bios -p eosio
+cleos push action eosio.token create '["eosio", "1000000.0000 SYS",0,0,0]' -p eosio.token
+cleos push action eosio.token issue '["eosio", "1000000.0000 SYS", "issue"]' -p eosio
+cleos get currency balance eosio.token eosio
+
+cleos set contract eosio ./eosio.system
+cleos system newaccount eosio factsiotest1 EOS8kLLKdikhpY99EWSj8L8HHLSyE8xiRQW9mZAXxcf5thYK2LCzM EOS8kLLKdikhpY99EWSj8L8HHLSyE8xiRQW9mZAXxcf5thYK2LCzM --stake-net '50.00 SYS' --stake-cpu '50.00 SYS'  --buy-ram '10.0000 SYS'
+executed transaction: e2e34b76648ef9c9c9e41ebae71bcca67e6cbd99d39fb00ac7bf5f7da740a4d7  344 bytes  3801 us
+#         eosio <= eosio::newaccount            {"creator":"eosio","name":"factsiotest1","owner":{"threshold":1,"keys":[{"key":"EOS8kLLKdikhpY99EWSj...
+#         eosio <= eosio::buyram                {"payer":"eosio","receiver":"factsiotest1","quant":"10.0000 SYS"}
+#   eosio.token <= eosio.token::transfer        {"from":"eosio","to":"eosio.ram","quantity":"9.9500 SYS","memo":"buy ram"}
+#         eosio <= eosio.token::transfer        {"from":"eosio","to":"eosio.ram","quantity":"9.9500 SYS","memo":"buy ram"}
+#     eosio.ram <= eosio.token::transfer        {"from":"eosio","to":"eosio.ram","quantity":"9.9500 SYS","memo":"buy ram"}
+#   eosio.token <= eosio.token::transfer        {"from":"eosio","to":"eosio.ramfee","quantity":"0.0500 SYS","memo":"ram fee"}
+#         eosio <= eosio.token::transfer        {"from":"eosio","to":"eosio.ramfee","quantity":"0.0500 SYS","memo":"ram fee"}
+#  eosio.ramfee <= eosio.token::transfer        {"from":"eosio","to":"eosio.ramfee","quantity":"0.0500 SYS","memo":"ram fee"}
+#         eosio <= eosio::delegatebw            {"from":"eosio","receiver":"factsiotest1","stake_net_quantity":"50.0000 SYS","stake_cpu_quantity":"5...
+#   eosio.token <= eosio.token::transfer        {"from":"eosio","to":"eosio.stake","quantity":"100.0000 SYS","memo":"stake bandwidth"}
+#         eosio <= eosio.token::transfer        {"from":"eosio","to":"eosio.stake","quantity":"100.0000 SYS","memo":"stake bandwidth"}
+
+cleos get account facts1
+
+cleos system regproducer factsiotest1 EOS6FwkA7gn9a46LbmJWuRCXdZYW9jznckVKXcZTHYbcFBAB9VcNC http://localhost:8889
+
+cleos push action eosio.token transfer '["eosio", "factsiotest1", "200000.0000 SYS", "vote"]' -p eosio
+cleos push action eosio.token transfer '["eosio", "factsiotest2", "200000.0000 SYS", "vote"]' -p eosio
+cleos push action eosio.token transfer '["eosio", "factsiotest2", "200000.0000 SYS", "vote"]' -p eosio
+
+cleos system delegatebw factsiotest1 factsiotest1 "150000.0000 SYS" "150000.0000 SYS"
+cleos system delegatebw factsiotest1 factsiotest1 "150000.0000 SYS" "150000.0000 SYS"
+cleos system delegatebw factsiotest3 factsiotest3 "100000.0000 SYS" "100000.0000 SYS"
+
+cleos system voteproducer prods factsiotest1 factsiotest1
+cleos system voteproducer prods factsiotest2 factsiotest1
+cleos system voteproducer prods factsiotest3 factsiotest1
+
+cleos system listproducers
+cleos get table eosio eosio voters
+cleos get table eosio eosio producers
+cleos get table eosio facts1 delband
+cleos get table eosio.token eosio accounts
+
+
+cleos system undelegatebw facts1 facts1 "50000.0000 SYS" "50000.0000 SYS"
+cleos system unregprod facts2
+
+
+
+
