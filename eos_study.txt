@@ -89,8 +89,8 @@ cleos create account eosio eosio.upay EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuG
 
 cleos set contract eosio.token ./eosio.token -p eosio.token
 cleos set contract eosio ./eosio.bios -p eosio
-cleos push action eosio.token create '["eosio", "1000000.0000 SYS",0,0,0]' -p eosio.token
-cleos push action eosio.token issue '["eosio", "1000000.0000 SYS", "issue"]' -p eosio
+cleos push action eosio.token create '["eosio", "1000000000.0000 SYS",0,0,0]' -p eosio.token
+cleos push action eosio.token issue '["eosio", "1000000000.0000 SYS", "issue"]' -p eosio
 cleos get currency balance eosio.token eosio
 
 cleos set contract eosio ./eosio.system
@@ -134,6 +134,11 @@ cleos get table eosio.token eosio accounts
 cleos system undelegatebw facts1 facts1 "50000.0000 SYS" "50000.0000 SYS"
 cleos system unregprod facts2
 
+cleos set contract factsiotest1 ./hello -p factsiotest1
+cleos push action factsiotest1 hi '["factsiotest1"]' -p factsiotest1
 
+cleos get account factsiotest1
+
+cleos set account permission bob active '{"threshold": 1,"keys": [{"key": "EOS8kLLKdikhpY99EWSj8L8HHLSyE8xiRQW9mZAXxcf5thYK2LCzM","weight": 1}],"accounts": [{"permission":{"actor":"dice","permission":"eosio.code"},"weight":1}]}' owner -p bob
 
 
