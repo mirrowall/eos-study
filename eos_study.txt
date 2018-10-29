@@ -1,3 +1,39 @@
+区块链EOS开发：
+1.下载源码，然后运行 eos_build.sh开始编译，直至编译成功
+2. 首先要生成创世节点， 生成创世节点的步骤：
+第一次启动
+./nodeos -e -p eosio --plugin eosio::chain_api_plugin --plugin eosio::history_api_plugin
+
+运行此命令， 可在$HOME/.local/share/eosio/nodeos 生成 config 和 data 文件夹
+修改config/config.ini 文件：
+producer-name=eosio  一定要叫eosio, 不清楚为什么，待详细查看源码
+修改 config/config.ini 的signature-provider, 这个值一定要和genesis.json 的一致
+修改config/config.ini的enable-stale-production=true, 创世结点的此值为true, 其它为false
+增加plugin
+plugin = eosio::chain_api_plugin
+plugin = eosio::history_api_plugin
+plugin = eosio::chain_plugin
+plugin = eosio::history_plugin
+plugin = eosio::net_plugin
+plugin = eosio::net_api_plugin
+plugin = eosio::producer_plugin
+然后运行 nodeos --config-dir config --data-dir data --genesis-json ./genesis.json 便可以正常运行
+
+3. 创建钱包
+cleos wallet create --file ./wallet/miwoo.txt
+生成的私钥在 miwoo.txt中
+
+创建自定义名称的钱包（./cleos wallet create -n xxx
+给钱包上锁（./cleos wallet lock -n xxx）
+解锁钱包（./cleos wallet unlock -n xxx --password pasxxxxxxxxxxxxxxxxxxx）
+查看钱包中的keys（./cleos wallet keys）
+./cleos wallet list
+创建密钥（./cleos create key）
+向wallet导入key（./cleos wallet import private-key）
+创建账户（./cleos create account ${authorizing_account} ${new_account} ${owner_key} ${active_key} ）
+4、查看账户信息（./cleos get account -j ${accountName}）
+5、根据公钥获得账户列表（./cleos get accounts ${public-key}）
+
 
 eos wallet passwd: PW5KfVQTPyMJ7h2D3wtFBrPrW7gUF48vZ7tGD3NV4RE2eeegHCwb5
 miwoo wallet passwd: PW5KTNsyjpny9i7W17RsXJDuKetm5ERWK6csZjCZ66NNKWEv5p4nF
@@ -53,16 +89,7 @@ wallet-dir = "."
 再次运行: ./nodes   如果异常退出， database dirty, 运行 ./nodes --delete-all-blocks
 
 
-创建自定义名称的钱包（./cleos wallet create -n xxx
-给钱包上锁（./cleos wallet lock -n xxx）
-解锁钱包（./cleos wallet unlock -n xxx --password pasxxxxxxxxxxxxxxxxxxx）
-查看钱包中的keys（./cleos wallet keys）
-./cleos wallet list
-创建密钥（./cleos create key）
-向wallet导入key（./cleos wallet import private-key）
-创建账户（./cleos create account ${authorizing_account} ${new_account} ${owner_key} ${active_key} ）
-4、查看账户信息（./cleos get account -j ${accountName}）
-5、根据公钥获得账户列表（./cleos get accounts ${public-key}）
+
 
 在搞链之前：
 systemAccounts = [
