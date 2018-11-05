@@ -168,4 +168,36 @@ cleos get account factsiotest1
 
 cleos set account permission bob active '{"threshold": 1,"keys": [{"key": "EOS8kLLKdikhpY99EWSj8L8HHLSyE8xiRQW9mZAXxcf5thYK2LCzM","weight": 1}],"accounts": [{"permission":{"actor":"dice","permission":"eosio.code"},"weight":1}]}' owner -p bob
 
+编译分析：
+//TODO, 在编译 eos/libraries/wasm-jit/Source/Programs 的时候，发生了错误，链接出错，故在此注释掉了部分代码，后续分析
+
+
+代码分析：
+appbase:
+	定义了基本的框架，application.hpp 是nodeos的基本框架，  
+	plugin.hpp 所有的plugin的基本框架
+	注意：
+	abstract_plugin 定义了以下三个主要的虚函数
+	         virtual void initialize(const variables_map& options) = 0;
+           	 virtual void startup() = 0;
+	         virtual void shutdown() = 0;
+	plugin 从 abstract_plugin继承下来，但是并没有在这三个函数直接写功能代码，而是又实现了
+		plugin_initialize
+		plugin_startup
+		plugin_shutdown
+	这三个函数即没有继承，也没有重载，只是用模板类来调用
+	目前不太清楚为什么要这么写，要是我写的话，直接放在子类的实现函数
+nodeos: 
+代码位于 program/nodeos/main.cpp
+	 加载了四个基本的 plugin(chain_plugin, http_plugin, net_plugin, producer_plugin)
+	然后分别初始化plugin, 并且start
+
+PLUGIN 分析：
+	
+四个基本plugins:
+chain_plugin:	
+producer_plugin:
+net_plugin:
+http_plugin:
+
 
