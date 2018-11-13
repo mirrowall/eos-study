@@ -1,4 +1,7 @@
 区块链EOS开发：
+打日志的方式进行调试。若想在命令行中将合约日志打印出来，需要在启动nodeos的时候传入--contracts-console
+
+
 1.下载源码，然后运行 eos_build.sh开始编译，直至编译成功
 2. 首先要生成创世节点， 生成创世节点的步骤：
 第一次启动
@@ -7,8 +10,11 @@
 运行此命令， 可在$HOME/.local/share/eosio/nodeos 生成 config 和 data 文件夹
 修改config/config.ini 文件：
 producer-name=eosio  一定要叫eosio, 不清楚为什么，待详细查看源码
+原因： /home/miwoo/workspace/blockchain/eos/libraries/chain/include/eosio/chain/config.hpp:26 定义创世用户名称，可以在这里改
+
 修改 config/config.ini 的signature-provider, 这个值一定要和genesis.json 的一致
 修改config/config.ini的enable-stale-production=true, 创世结点的此值为true, 其它为false
+
 增加plugin
 plugin = eosio::chain_api_plugin
 plugin = eosio::history_api_plugin
@@ -199,5 +205,36 @@ chain_plugin:
 producer_plugin:
 net_plugin:
 http_plugin:
+
+合约分析：
+eosio.token 合约分析 https://www.jianshu.com/p/714bb9d19784
+用来创建和转帐的
+
+eosio.msig 合约分析 https://www.jianshu.com/p/15ceb5a5b07c
+用于提案和多重签名交易 
+
+eosio.system 合约分析 https://www.jianshu.com/p/61d2faaa28ec https://www.jianshu.com/p/68198dedf635
+创建账户、投票选举超级节点、质押资源、域名竞拍等
+
+eos/plugins/wallet_plugin/wallet_manager.cpp
+line 14, password prefix = PW,  如里需要改钱包私钥，可以在这里改
+
+
+cleos create account eosio eosio.bpay EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+实际上是调用 cleos/main.cpp 里的 create_account_subcommand, 注意其中的simple参数，此值为判断用户的创建方式，如果为true, 则创建一个默认1000CPU的action, 如果为false, 则认为是system合约创建， 需要检查cpu及ram
+步骤：
+cleos/httpc.hpp 定义了若干需要的地址
+send_actions->push_actions->push_transaction->get_info(会通过HTTP调用chain_plugin的get_info)->determine_required_keys(会通过wallet_url调用wallet_plugin, 然后通过get_required_keys去验证私钥)生成一个sign_transaction， 然后调用chain_base里的push_transaction， 生成一个区块
+
+在chain_plugin里
+void read_write::push_transaction
+实际上是调用 app().get_method<incoming::methods::transaction_async>()
+这个函数是 在produce_plugin里， 
+my->_incoming_transaction_async_provider = app().get_method<incoming::methods::transaction_async>().register_provider([this](const packed_transaction_ptr& trx, bool persist_until_expired, next_function<transaction_trace_ptr> next) -> void {
+      return my->on_incoming_transaction_async(trx, persist_until_expired, next );
+   });
+在这里赋的值，然后通过此函数，调用至 produce_plugin 里的 on_incoming_transaction_async 的函数里， 再调用到 chain_plugin 里的 controller::push_transaction 里， 然后通过send_response返回状态
+
+
 
 
