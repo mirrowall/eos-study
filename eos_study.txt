@@ -26,7 +26,7 @@ plugin = eosio::producer_plugin
 然后运行 nodeos --config-dir config --data-dir data --genesis-json ./genesis.json 便可以正常运行
 
 3. 创建钱包
-cleos wallet create --file ./wallet/miwoo.txt
+生成默认的钱包　cleos wallet create --file ./wallet/miwoo.txt
 生成的私钥在 miwoo.txt中
 
 创建自定义名称的钱包（./cleos wallet create -n xxx
@@ -36,6 +36,8 @@ cleos wallet create --file ./wallet/miwoo.txt
 ./cleos wallet list
 创建密钥（./cleos create key）
 向wallet导入key（./cleos wallet import private-key）
+cleos wallet import -n test --private-key 5JEqyMrJjFGmSQ5ku5Yqx6c3tt1BrRHuwwoTKRbmcPYCZaEExCj
+
 创建账户（./cleos create account ${authorizing_account} ${new_account} ${owner_key} ${active_key} ）
 4、查看账户信息（./cleos get account -j ${accountName}）
 5、根据公钥获得账户列表（./cleos get accounts ${public-key}）
@@ -98,6 +100,7 @@ wallet-dir = "."
 
 
 在搞链之前：
+将genesis/config.ini的私钥导入到钱包中，否则会出权限不对的错
 systemAccounts = [
     'eosio.bpay',
     'eosio.msig',
@@ -235,6 +238,15 @@ my->_incoming_transaction_async_provider = app().get_method<incoming::methods::t
    });
 在这里赋的值，然后通过此函数，调用至 produce_plugin 里的 on_incoming_transaction_async 的函数里， 再调用到 chain_plugin 里的 controller::push_transaction 里， 然后通过send_response返回状态
 
+eosio.system合约分析
+https://www.jianshu.com/p/61d2faaa28ec
+https://blog.csdn.net/itleaks/article/details/80743836
+https://blog.csdn.net/ITleaks/article/details/80578154
 
+eosio.system/delegatebindwidth.cpp
+   static constexpr time refund_delay = 3*24*3600;
+   static constexpr time refund_expiration_time = 3600;
+此处定义如果撤消抵压的赎回时间，三天
 
+只要action中执行了持久化存储相关的逻辑就需要收取ram使用费，比如系统合约的newaccount ,updateauth, setcode, setabi, schedule_deferred_transaction, eosio.token的transfer
 
